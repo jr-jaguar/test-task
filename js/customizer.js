@@ -39,4 +39,19 @@
 			}
 		} );
 	} );
+	
+	// Font color.
+	wp.customize( 'dt_font_color', function( value ) {
+		value.bind( function( to ) {
+			if ( 'blank' === to ) {
+				$( 'body' ).css({
+					color:      '#000'
+				});
+			} else {
+				$( 'body' ).css({
+					color:      to
+				});
+			}
+		});
+	});
 } )( jQuery );
