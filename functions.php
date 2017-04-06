@@ -200,3 +200,47 @@ function dt_custom_option($wp_customize)
  */
 
 add_theme_support('custom-logo');
+
+/**
+ * Stars
+ */
+
+
+add_action('add_meta_boxes', 'dt_stars_field', 1);
+
+function dt_stars_field()
+{
+    add_meta_box('extra_fields', 'Rating Stars', 'dt_stars_fields_box_func', 'post', 'normal', 'high');
+}
+
+function dt_stars_fields_box_func($post)
+{
+    ?>
+
+
+    <p><select name="stars">
+            <?php $stars = (int)get_post_meta($post->ID, 'stars', 1);
+            for ($i = 0; $i <= 5; $i++) {
+                echo '<option value="' . $i . '"' . selected($stars, $i) . ">$i</option>";
+            }
+            ?></select></p>
+
+    <input type="hidden" name="dt_stars_fields_nonce" value="<?php echo wp_create_nonce(__FILE__); ?>"/>
+    <?php
+}
+
+
+add_action('save_post', 'dt_stars_fields_update', 0);
+
+
+function dt_stars_fields_update($post_id)
+{
+    if (!wp_verify_nonce($_POST['dt_stars_fields_nonce'], __FILE__)) return false;
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return false;
+    if (!current_user_can('edit_post', $post_id)) return false;
+
+    if (!isset($_POST['stars'])) return false;
+    
+    update_post_meta($post_id, 'stars', $_POST['stars']);
+    return $post_id;
+}
